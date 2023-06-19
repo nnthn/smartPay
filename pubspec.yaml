@@ -1,0 +1,68 @@
+name: SmartPay
+description: A billing solution for small enterprises.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=2.19.6 <3.0.0"
+
+dependencies:
+  flutter_signin_button: ^2.0.0
+  flutter:
+    sdk: flutter
+  firebase_core: ^2.11.0
+  firebase_auth: ^4.5.0
+  google_sign_in: ^6.1.0
+  firebase_database: ^10.1.2
+  image_picker: ^0.8.7+4
+  firebase_storage: ^11.2.1
+  flutter_rating_bar: ^4.0.1
+  url_launcher: ^6.1.11
+  webview_flutter: ^4.2.1
+  cloud_firestore: ^4.7.1
+  flutter_sms: ^2.3.3
+  flutter_phone_direct_caller: ^2.1.1
+  flutter_launcher_icons: ^0.13.1
+  pdf: ^3.10.1
+  open_file: ^3.3.1
+  share_plus: ^7.0.2
+  path_provider: ^2.0.15
+  intl: ^0.18.1
+  
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  google_fonts: ^2.1.0
+
+flutter:
+  uses-material-design: true
+    
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: fonts/Poppins-Regular.ttf
+        - asset: fonts/Poppins-Black.ttf
+          weight: 900
+
+    - family: Inter
+      fonts:
+        - asset: fonts/Inter-Regular.ttf
+        - asset: fonts/Inter-Bold.ttf
+          weight: 500
+       
+
+flutter_icons:
+  image_path: "assets/images/icc.png" 
+  android: true
+  ios: true
+  # optionally, as transparency is not allowed on app store
+  # remove_alpha_ios: true
+flutter_svg: ^1.1.0
+
+  
+        

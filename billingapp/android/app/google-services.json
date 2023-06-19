@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "998880925581",
+    "project_id": "billingapp-7d357",
+    "storage_bucket": "billingapp-7d357.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998880925581:android:dc110d5f07c7f539608fc4",
+        "android_client_info": {
+          "package_name": "com.example.billingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "998880925581-rfh8dqu2dg242jq1a6b48kllavhlfs9b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.billingapp",
+            "certificate_hash": "5bd8057d436f726086f54770f9b2a1ca335e5ad9"
+          }
+        },
+        {
+          "client_id": "998880925581-8dqe3nrrscs564ttm46v9t5ubdln1h6s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2oxCaTYZOdI_QABbkw-4Q7XTpMdkNh40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "998880925581-8dqe3nrrscs564ttm46v9t5ubdln1h6s.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "998880925581-mvqteckq2u8q7qpc6lmutffg5l7lpfff.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.billingapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
