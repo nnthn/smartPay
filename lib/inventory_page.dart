@@ -216,7 +216,8 @@ class _InventoryPageState extends State<InventoryPage> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   final String productName = _productNameController.text.trim();
-                  final int quantity = int.parse(_quantityController.text);
+                  final int enteredQuantity =
+                      int.parse(_quantityController.text);
 
                   if (productId.isEmpty) {
                     // Adding a new product
@@ -226,15 +227,27 @@ class _InventoryPageState extends State<InventoryPage> {
                     FirebaseFirestore.instance.collection('products').add({
                       'productName': productName,
                       'price': price,
-                      'quantity': quantity,
+                      'quantity': enteredQuantity,
                     });
                   } else {
                     // Updating existing product's quantity
                     FirebaseFirestore.instance
                         .collection('products')
                         .doc(productId)
-                        .update({
-                      'quantity': quantity,
+                        .get()
+                        .then((docSnapshot) {
+                      if (docSnapshot.exists) {
+                        final int existingQuantity =
+                            docSnapshot.data()!['quantity'];
+                        final int updatedQuantity =
+                            existingQuantity + enteredQuantity;
+
+                        // Update the product's quantity in Firestore
+                        FirebaseFirestore.instance
+                            .collection('products')
+                            .doc(productId)
+                            .update({'quantity': updatedQuantity});
+                      }
                     });
                   }
 
