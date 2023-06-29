@@ -83,13 +83,22 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final customers = snapshot.data!.docs;
-                    return ListView.builder(
+                    return ListView.separated(
                       itemCount: customers.length,
                       itemBuilder: (context, index) {
                         final customerData =
                             customers[index].data() as Map<String, dynamic>;
                         final customerName = customerData['name'];
-                        return Column(
+                        return ListTile(
+                          title: Text('$customerName'),
+                          leading: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: Color.fromARGB(50, 100, 143, 138),
+                            backgroundImage: NetworkImage(
+                                'https://creazilla-store.fra1.digitaloceanspaces.com/icons/3251108/person-icon-md.png'),
+                          ),
+
+                          /* return Column(
                           children: [
                             Container(
                               child: ListTile(
@@ -104,7 +113,11 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                 dashWidth: 5.0,
                                 dashGap: 3.0),
                           ],
+                        ); */
                         );
+                      },
+                      separatorBuilder: (context, index) {
+                        return Divider();
                       },
                     );
                   } else if (snapshot.hasError) {

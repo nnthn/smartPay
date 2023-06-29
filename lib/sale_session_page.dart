@@ -12,6 +12,7 @@ class _SaleSessionPageState extends State<SaleSessionPage> {
   String _selectedCustomer = '';
   String _selectedMobileNo = '';
   List<Map<String, dynamic>> _selectedItems = [];
+  double _grandTotal = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -54,48 +55,72 @@ class _SaleSessionPageState extends State<SaleSessionPage> {
 
                         final customers = snapshot.data!.docs;
 
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: customers.length,
-                          itemBuilder: (context, index) {
-                            final customerData = customers[index].data();
-                            final customerName = customerData['name'] ?? '';
-                            final mobileNo = customerData['mobile'] ?? '';
+                        return Flexible(
+                          // Wrap ListView.builder with Flexible
+                          child: ListView.builder(
+                            shrinkWrap: false, // Set shrinkWrap to false
+                            itemCount: customers.length,
+                            itemBuilder: (context, index) {
+                              final customerData = customers[index].data();
+                              final customerName = customerData['name'] ?? '';
+                              final mobileNo = customerData['mobile'] ?? '';
 
-                            return Column(
-                              children: [
-                                ListTile(
-                                  title: Text(
-                                    customerName,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    mobileNo,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    Navigator.pop(
-                                      context,
-                                      {
-                                        'customerName': customerName,
-                                        'mobileNo': mobileNo,
-                                      },
-                                    );
-                                  },
+                              return ListTile(
+                                title: Text('$customerName'),
+                                subtitle: Text('$mobileNo'),
+                                leading: CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor:
+                                      Color.fromARGB(50, 100, 143, 138),
+                                  backgroundImage: NetworkImage(
+                                      'https://creazilla-store.fra1.digitaloceanspaces.com/icons/3251108/person-icon-md.png'),
                                 ),
-                                CustomDivider(
+                                onTap: () {
+                                  Navigator.pop(
+                                    context,
+                                    {
+                                      'customerName': customerName,
+                                      'mobileNo': mobileNo,
+                                    },
+                                  );
+                                },
+
+                                /*  Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(
+                                      customerName,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      mobileNo,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(
+                                        context,
+                                        {
+                                          'customerName': customerName,
+                                          'mobileNo': mobileNo,
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  CustomDivider(
                                     height: 1.0,
                                     thickness: 1.0,
                                     color: Colors.grey,
                                     dashWidth: 5.0,
-                                    dashGap: 3.0),
-                              ],
-                            );
-                          },
+                                    dashGap: 3.0,
+                                  ),
+                                ],*/
+                              );
+                            },
+                          ),
                         );
                       },
                     ),
@@ -194,77 +219,82 @@ class _SaleSessionPageState extends State<SaleSessionPage> {
                                     }
                                     final inventory = snapshot.data!.docs;
 
-                                    return ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: inventory.length,
-                                      itemBuilder: (context, index) {
-                                        final documentSnapshot =
-                                            inventory[index];
-                                        final data = documentSnapshot.data();
+                                    return Expanded(
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: inventory.length,
+                                        itemBuilder: (context, index) {
+                                          final documentSnapshot =
+                                              inventory[index];
+                                          final data = documentSnapshot.data();
 
-                                        final productName =
-                                            data['productName'] ?? '';
-                                        final price = data['price'] ?? '';
-                                        var quantity = data['quantity'] ?? 0;
-                                        final initialQuantity =
-                                            data['quantity'] ??
-                                                0; // Retrieve initial quantity
+                                          final productName =
+                                              data['productName'] ?? '';
+                                          final price = data['price'] ?? '';
+                                          var quantity = data['quantity'] ?? 0;
+                                          final initialQuantity = data[
+                                                  'quantity'] ??
+                                              0; // Retrieve initial quantity
 
-                                        return Column(
-                                          children: [
-                                            ListTile(
-                                              title: Text(
-                                                productName,
-                                                style: TextStyle(
-                                                  fontFamily: 'Poppins',
+                                          return Column(
+                                            children: [
+                                              ListTile(
+                                                title: Text(
+                                                  productName,
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                  ),
                                                 ),
-                                              ),
-                                              subtitle: Text(
-                                                'Price: $price & Quantity: $quantity',
-                                                style: TextStyle(
-                                                  fontFamily: 'Poppins',
+                                                subtitle: Text(
+                                                  'Price: $price & Quantity: $quantity',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                  ),
                                                 ),
+                                                onTap: () {
+                                                  if (quantity == 0) {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return AlertDialog(
+                                                          title: Text(
+                                                              'Product Out of Stock'),
+                                                          content: Text(
+                                                              'This product is currently out of stock. Please restock.'),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: Text('OK'),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  } else {
+                                                    Navigator.pop(
+                                                        context, data);
+                                                  }
+                                                },
+                                                tileColor: quantity == 0
+                                                    ? Colors.grey
+                                                        .withOpacity(0.5)
+                                                    : null,
                                               ),
-                                              onTap: () {
-                                                if (quantity == 0) {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AlertDialog(
-                                                        title: Text(
-                                                            'Product Out of Stock'),
-                                                        content: Text(
-                                                            'This product is currently out of stock. Please restock.'),
-                                                        actions: [
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            child: Text('OK'),
-                                                          ),
-                                                        ],
-                                                      );
-                                                    },
-                                                  );
-                                                } else {
-                                                  Navigator.pop(context, data);
-                                                }
-                                              },
-                                              tileColor: quantity == 0
-                                                  ? Colors.grey.withOpacity(0.5)
-                                                  : null,
-                                            ),
-                                            CustomDivider(
+                                              CustomDivider(
                                                 height: 1.0,
                                                 thickness: 1.0,
                                                 color: Colors.grey,
                                                 dashWidth: 5.0,
-                                                dashGap: 3.0),
-                                          ],
-                                        );
-                                      },
+                                                dashGap: 3.0,
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
                                     );
                                   },
                                 ),
@@ -281,7 +311,13 @@ class _SaleSessionPageState extends State<SaleSessionPage> {
                                   0; // Retrieve initial quantity
                           selectedItem['initialQuantity'] =
                               initialQuantity; // Add initial quantity to the selected item
+                          selectedItem['quantity'] =
+                              0; // Set initial quantity to 0
+
                           _selectedItems.add(selectedItem);
+
+                          _grandTotal += (selectedItem['price'] ?? 0) *
+                              (selectedItem['quantity'] ?? 0);
                         });
                       }
                     },
@@ -329,7 +365,7 @@ class _SaleSessionPageState extends State<SaleSessionPage> {
                               ),
                             ),
                             subtitle: Text(
-                              'Price: $price & Quantity: $quantity',
+                              'Price: $price & Quantity: $quantity | Total: ${price * quantity}',
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                               ),
@@ -342,6 +378,7 @@ class _SaleSessionPageState extends State<SaleSessionPage> {
                                     // Check if the quantity is less than the initial quantity
                                     quantity++;
                                     item['quantity'] = quantity;
+                                    _grandTotal += (item['price'] ?? 0);
                                   }
                                 });
                               },
@@ -353,6 +390,8 @@ class _SaleSessionPageState extends State<SaleSessionPage> {
                                   if (quantity > 0) {
                                     quantity--;
                                     item['quantity'] = quantity;
+                                    _grandTotal -=
+                                        (item['price'] * item['quantity'] ?? 0);
                                   }
                                 });
                               },
@@ -365,11 +404,27 @@ class _SaleSessionPageState extends State<SaleSessionPage> {
                             color: Colors.grey,
                             dashWidth: 5.0,
                             dashGap: 3.0),
+                        // Text(
+                        //   'Grand Total: $_grandTotal',
+                        //   style: TextStyle(
+                        //     fontFamily: 'Poppins',
+                        //     fontWeight: FontWeight.bold,
+                        //     fontSize: 16,
+                        //   ),
+                        // ),
                       ],
                     );
                   }).toList(),
                 ),
               SizedBox(height: 16.0),
+              Text(
+                'Total: $_grandTotal',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(

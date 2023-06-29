@@ -14,15 +14,48 @@ class PaymentPage extends StatelessWidget {
     required this.soldItems,
   });
 
-  void _updateSalesHistory(String paymentOption) {
-    // Create a new document in the sales history collection
-    FirebaseFirestore.instance.collection('sales_history').add({
-      'customerName': customerName,
-      'mobileNumber': mobileNumber,
-      'soldItems': soldItems,
-      'paymentOption': paymentOption,
-      'date': DateTime.now(),
-    });
+  void _updateSalesHistory(String paymentOption) async {
+    final salesHistoryRef =
+        FirebaseFirestore.instance.collection('sales_history');
+
+    final customerQuery = await salesHistoryRef
+        .where('customerName', isEqualTo: customerName)
+        .where('paymentOption', isEqualTo: 'Pay Later')
+        .get();
+
+    if (customerQuery.docs.isNotEmpty) {
+      final customerDoc = customerQuery.docs.first;
+      final existingSoldItems = customerDoc['soldItems'];
+      final existingAmount = customerDoc['amount'] ?? 0;
+
+      final updatedSoldItems =
+          List<Map<String, dynamic>>.from(existingSoldItems);
+      updatedSoldItems.addAll(soldItems);
+
+      final newAmount = updatedSoldItems.fold(existingAmount, (total, item) {
+        final quantity = item['quantity'];
+        final price = item['price'];
+        return total + (quantity * price);
+      }).toInt(); // Cast the result to an integer
+
+      await salesHistoryRef.doc(customerDoc.id).update({
+        'soldItems': updatedSoldItems,
+        'amount': newAmount,
+      });
+    } else {
+      salesHistoryRef.add({
+        'customerName': customerName,
+        'mobileNumber': mobileNumber,
+        'soldItems': soldItems,
+        'paymentOption': paymentOption,
+        'date': DateTime.now(),
+        'amount': soldItems.fold(0, (total, item) {
+          final quantity = item['quantity'];
+          final price = item['price'];
+          return (total + (quantity * price)).toInt();
+        }).toInt(), // Cast the result to an integer
+      });
+    }
 
     // Update product quantities in the database
     soldItems.forEach((item) {

@@ -130,7 +130,7 @@ class PayLaterPage extends StatelessWidget {
                                     ),
                                   ),
                                   subtitle: Text(
-                                    'Price: $price | Quantity: $quantity',
+                                    'Price: $price | Quantity: $quantity | Total: ${price * quantity}',
                                     style: TextStyle(
                                       color: Colors.grey[600],
                                       fontSize: 14,
