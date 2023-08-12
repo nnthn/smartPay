@@ -3,7 +3,7 @@ import 'package:billingapp/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class PaymentPage extends StatelessWidget {
+class PaymentPage extends StatefulWidget {
   final String customerName;
   final String mobileNumber;
   final List<Map<String, dynamic>> soldItems;
@@ -14,12 +14,29 @@ class PaymentPage extends StatelessWidget {
     required this.soldItems,
   });
 
+  @override
+  _PaymentPageState createState() => _PaymentPageState();
+}
+
+class _PaymentPageState extends State<PaymentPage> {
+  double _grandtotal = 0.0;
+  @override
+  void initState() {
+    super.initState();
+    // Calculate the grand total only once during widget initialization
+    widget.soldItems.forEach((item) {
+      final price = item['price'] ?? 0;
+      final quantity = item['quantity'] ?? 0;
+      _grandtotal += price * quantity;
+    });
+  }
+
   void _updateSalesHistory(String paymentOption) async {
     final salesHistoryRef =
         FirebaseFirestore.instance.collection('sales_history');
 
     final customerQuery = await salesHistoryRef
-        .where('customerName', isEqualTo: customerName)
+        .where('customerName', isEqualTo: widget.customerName)
         .where('paymentOption', isEqualTo: 'Pay Later')
         .get();
 
@@ -30,7 +47,7 @@ class PaymentPage extends StatelessWidget {
 
       final updatedSoldItems =
           List<Map<String, dynamic>>.from(existingSoldItems);
-      updatedSoldItems.addAll(soldItems);
+      updatedSoldItems.addAll(widget.soldItems);
 
       final newAmount = updatedSoldItems.fold(existingAmount, (total, item) {
         final quantity = item['quantity'];
@@ -44,12 +61,12 @@ class PaymentPage extends StatelessWidget {
       });
     } else {
       salesHistoryRef.add({
-        'customerName': customerName,
-        'mobileNumber': mobileNumber,
-        'soldItems': soldItems,
+        'customerName': widget.customerName,
+        'mobileNumber': widget.mobileNumber,
+        'soldItems': widget.soldItems,
         'paymentOption': paymentOption,
         'date': DateTime.now(),
-        'amount': soldItems.fold(0, (total, item) {
+        'amount': widget.soldItems.fold(0, (total, item) {
           final quantity = item['quantity'];
           final price = item['price'];
           return (total + (quantity * price)).toInt();
@@ -58,7 +75,7 @@ class PaymentPage extends StatelessWidget {
     }
 
     // Update product quantities in the database
-    soldItems.forEach((item) {
+    widget.soldItems.forEach((item) {
       final productName = item['productName'];
       final quantity = item['quantity'];
 
@@ -91,13 +108,13 @@ class PaymentPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Customer: $customerName',
+            Text('Customer: ${widget.customerName}',
                 style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.bold,
                     fontSize: 18)),
             SizedBox(height: 8.0),
-            Text('Mobile Number: $mobileNumber',
+            Text('Mobile Number: ${widget.mobileNumber}',
                 style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
             SizedBox(height: 16.0),
             Text('Selected Items:',
@@ -109,9 +126,11 @@ class PaymentPage extends StatelessWidget {
             SizedBox(height: 8.0),
             Expanded(
               child: ListView.builder(
-                itemCount: soldItems.length,
+                itemCount: widget.soldItems.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final item = soldItems[index];
+                  final item = widget.soldItems[index];
+                  //_grandtotal += (item['price'] ?? 0) * (item['quantity'] ?? 0);
+
                   return Column(
                     children: [
                       ListTile(
@@ -136,6 +155,16 @@ class PaymentPage extends StatelessWidget {
                     ],
                   );
                 },
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Total: $_grandtotal',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins',
               ),
             ),
             SizedBox(height: 16.0),

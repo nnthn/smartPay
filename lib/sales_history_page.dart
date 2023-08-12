@@ -62,6 +62,7 @@ class SalesHistoryPage extends StatelessWidget {
               final soldItems = sale['soldItems'] ?? [];
               final paymentOption = sale['paymentOption'] ?? '';
               final date = sale['date']?.toDate();
+              double _grandtotal = 0.0;
 
               return Card(
                 margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -118,6 +119,8 @@ class SalesHistoryPage extends StatelessWidget {
                           final productName = item['productName'] ?? '';
                           final price = item['price'] ?? '';
                           final quantity = item['quantity'] ?? '';
+                          _grandtotal +=
+                              (item['price'] ?? 0) * (item['quantity'] ?? 0);
 
                           return Column(
                             children: [
@@ -149,6 +152,16 @@ class SalesHistoryPage extends StatelessWidget {
                             ],
                           );
                         }).toList(),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Total: $_grandtotal',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins',
+                        ),
                       ),
                     ],
                   ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PayLaterPage extends StatelessWidget {
+  double _grandtotal = 0.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +62,7 @@ class PayLaterPage extends StatelessWidget {
               final soldItems = sale['soldItems'] ?? [];
               final paymentOption = sale['paymentOption'] ?? '';
               final date = sale['date']?.toDate();
-
+              _grandtotal = 0.0;
               return Card(
                 margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 elevation: 2,
@@ -118,6 +119,9 @@ class PayLaterPage extends StatelessWidget {
                           final price = item['price'] ?? '';
                           final quantity = item['quantity'] ?? '';
 
+                          _grandtotal +=
+                              (item['price'] ?? 0) * (item['quantity'] ?? 0);
+
                           return Column(
                             children: [
                               Container(
@@ -150,7 +154,17 @@ class PayLaterPage extends StatelessWidget {
                           );
                         }).toList(),
                       ),
-                    ],
+                      SizedBox(height: 8),
+                      Text(
+                        'Total: $_grandtotal',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ], //total
                   ),
                   trailing: ElevatedButton(
                     onPressed: () {
